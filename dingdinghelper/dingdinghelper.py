@@ -4,10 +4,12 @@
 @Date: 2018-12-27 17:30:23
 '''
 
-import os, json, math
+import os, json, math, time, sys
 from urllib import request, parse
 from filechunkio import FileChunkIO
 import requests
+
+from ws import get_cookie, Message 
 
 class DingDingHelper:
   """钉钉助手
@@ -15,6 +17,7 @@ class DingDingHelper:
 
   def __init__(self, cfg):
     self._cfg = cfg
+    self._cookie = None
 
   def get_access_token(self):
     self._access_token = ""
@@ -86,6 +89,7 @@ class DingDingHelper:
         "Accept-Language": "zh-CN,zh;q=0.9",
         "Connection": "keep-alive",
         "Host": "im.dingtalk.com",
+        "Cookie": self._cookie,
         "Origin": "https://im.dingtalk.com",
         "Referer": "https://im.dingtalk.com/?spm=a3140.8736650.2231772.1.7eb3e3dwxRnir&source=2202&lwfrom=2017120202092064209309201",
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36"
@@ -99,7 +103,39 @@ class DingDingHelper:
       "tempUrl": mediaid
     }
     res = requests.post(url, json=data, headers=headers)
-    print(res.json())
+    if res.json().get("success"):
+      print("Add file to space successfully.")
+    else:
+      print("Add file to space failed.")
+
+  def _generate_cookie(self):
+    tmp = None
+    try:
+      with open(self._cfg['cookie_filepath'], 'r') as fd:
+        tmp = fd.read()
+    except Exception:
+      self._renew_cookie()
+      return
+
+    data = json.loads(tmp)
+    self._cookie = data["cookie"]
+    # check if cookie valid
+    now = math.ceil(time.time())
+    old = int(data["expiration"])
+    if now - old > int(3600 * 24 * 6.5):
+      self._renew_cookie()
+
+  def _renew_cookie(self):
+    self._cookie = get_cookie(self._cfg['username'], self._cfg['password'])
+    expiration_time = math.ceil(time.time())
+    try:
+      fd = open(self._cfg['cookie_filepath'], 'w')
+      data = {"expiration": expiration_time, "cookie": self._cookie}
+      fd.write(json.dumps(data))
+      fd.close()
+    except Exception as e:
+      print("Error: {err}".format(err = e.args))
+      sys.exit(1)
 
   def upload_file(self, file_path):
     """上传文件
@@ -128,7 +164,8 @@ class DingDingHelper:
       return False
 
     # 新增文件到钉盘
-    self._add_file_to_space(access_token, mediaid, self._cfg['space_id'], self._cfg['space_path'])
+    self._generate_cookie()
+    self._add_file_to_space(access_token, mediaid, self._cfg['space_id'], self._cfg['space_path'] + "/" + os.path.basename(file_path))
 
     return True
 
