@@ -168,13 +168,3 @@ class DingDingHelper:
     self._add_file_to_space(access_token, mediaid, self._cfg['space_id'], self._cfg['space_path'] + "/" + os.path.basename(file_path))
 
     return True
-
-if __name__ == "__main__":
-  if not os.path.exists('dingding.cfg'):
-    print('Error: dingding.cfg not found.')
-  with open('dingding.cfg', 'r') as f:
-    cfg = json.load(f)
-  ding = DingDingHelper(cfg)
-  # ding.send_msg("这是一条测试消息")
-  # print(ding.get_access_token())
-  ding.upload_file("C:/Users/Administrator/Desktop/test_20181228.zip")
