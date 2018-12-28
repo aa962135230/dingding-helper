@@ -11,7 +11,7 @@ import random
 import requests
 import sys
 
-from websocket import create_connection
+from .websocket import create_connection
 
 class Message():
     def __init__(self, phone, password):

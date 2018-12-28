@@ -9,7 +9,7 @@ from urllib import request, parse
 from filechunkio import FileChunkIO
 import requests
 
-from ws import get_cookie, Message 
+from .ws import get_cookie, Message 
 
 class DingDingHelper:
   """钉钉助手
