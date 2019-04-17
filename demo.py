@@ -15,4 +15,4 @@ if __name__ == "__main__":
   ding = DingDingHelper(cfg)
   # ding.send_msg("这是一条测试消息")
   # print(ding.get_access_token())
-  ding.upload_file("C:/Users/Administrator/Desktop/test_20181228.zip")
+  ding.upload_file("C:/Users/Administrator/Desktop/test.zip")

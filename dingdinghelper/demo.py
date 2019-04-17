@@ -14,4 +14,4 @@ if __name__ == "__main__":
     cfg = json.load(f)
   ding = DingDingHelper(cfg)
   # ding.send_msg("这是一条测试消息")
-  ding.upload_file("C:/Users/Administrator/Desktop/test_20181228.zip")
+  ding.upload_file("C:/Users/Administrator/Desktop/test.zip")
