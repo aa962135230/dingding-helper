@@ -126,7 +126,7 @@ class DingDingHelper:
       self._renew_cookie()
 
   def _renew_cookie(self):
-    self._cookie = get_cookie(self._cfg['username'], self._cfg['password'])
+    self._cookie = get_cookie()
     expiration_time = math.ceil(time.time())
     try:
       fd = open(self._cfg['cookie_filepath'], 'w')
