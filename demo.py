@@ -4,15 +4,14 @@
 @Date: 2018-12-28 02:17:37
 '''
 
-import json, os
 from dingdinghelper import DingDingHelper
 
 if __name__ == "__main__":
-  if not os.path.exists('dingding.cfg'):
-    print('Error: dingding.cfg not found.')
-  with open('dingding.cfg', 'r') as f:
-    cfg = json.load(f)
-  ding = DingDingHelper(cfg)
-  # ding.send_msg("这是一条测试消息")
-  # print(ding.get_access_token())
-  ding.upload_file("C:/Users/Administrator/Desktop/xx.zip")
+  ding = DingDingHelper()
+  ding.username = '13709088421'
+  ding.password = 'Leon19860407'
+  ding.corpid = 'ding428c9b6bb8962a4d35c2f4657eb6378f'
+  ding.corpsecret = 'L8v6TYuSnjq8VsErPiCoJdWU19T5Embn1P8KW7IyO3_FkJw_ZLPqdKt6blQwwd34'
+  ding.msgurl = 'https://oapi.dingtalk.com/robot/send?access_token=e02a2c7de529ca83ba5d4e6f6c37b31f53152b3dc54d30653ed2235723027651'
+  # ding.send_msg('DingDingHelper Test')
+  ding.upload_file("E:/xxx.zip", 483476421, '/topjs/topjs3/windows/')

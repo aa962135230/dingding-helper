@@ -7,21 +7,72 @@
 import os, json, math, time, sys
 from urllib import request, parse
 from filechunkio import FileChunkIO
+from pathlib import Path
 import requests
 
 from .ws import get_cookie, Message 
 
 class DingDingHelper:
-  """钉钉助手
+  """
+  DingDing Helper
   """
 
-  def __init__(self, cfg):
-    self._cfg = cfg
+  def __init__(self):
     self._cookie = None
+    self._username = 'Unknown'
+    self._password = 'Unknown'
+    self._msgurl = 'Unknown'
+    self._corpid = 'Unknown'
+    self._corpsecret = 'Unknown'
+    self._cookiepath = str(Path.home()) + os.sep + ".dingding_cookie"
 
+  @property
+  def username(self):
+    return self._username
+  
+  @username.setter
+  def username(self, value):
+    self._username = value
+
+  @property
+  def password(self):
+    return self._password
+
+  @password.setter
+  def password(self, value):
+    self._password = value
+
+  @property
+  def msgurl(self):
+    return self._msgurl
+
+  @msgurl.setter
+  def msgurl(self, value):
+    self._msgurl = value
+
+  @property
+  def corpid(self):
+    return self._corpid
+
+  @corpid.setter
+  def corpid(self, value):
+    self._corpid = value
+
+  @property
+  def corpsecret(self):
+    return self._corpsecret
+
+  @property
+  def cookiepath(self):
+    return self._cookiepath
+
+  @corpsecret.setter
+  def corpsecret(self, value):
+    self._corpsecret = value
+  
   def get_access_token(self):
     self._access_token = ""
-    params = parse.urlencode({'corpid': self._cfg['corpid'], 'corpsecret': self._cfg['corpsecret']})
+    params = parse.urlencode({'corpid': self.corpid, 'corpsecret': self.corpsecret})
     url = 'https://oapi.dingtalk.com/gettoken?%s' % params
     with request.urlopen(url) as f:
       res = json.loads(f.read().decode('utf-8'))
@@ -36,7 +87,7 @@ class DingDingHelper:
       "at": { "isAtAll": False }
     }
     data = json.dumps(data).encode(encoding='utf-8')
-    req = request.Request(url=self._cfg['msg_url'], data=data, headers={
+    req = request.Request(url=self.msgurl, data=data, headers={
       "Content-Type": "application/json", "charset": "utf-8"
     })
     res = request.urlopen(req)
@@ -111,7 +162,7 @@ class DingDingHelper:
   def _generate_cookie(self):
     tmp = None
     try:
-      with open(self._cfg['cookie_filepath'], 'r') as fd:
+      with open(self.cookiepath, 'r') as fd:
         tmp = fd.read()
     except Exception:
       self._renew_cookie()
@@ -129,7 +180,7 @@ class DingDingHelper:
     self._cookie = get_cookie()
     expiration_time = math.ceil(time.time())
     try:
-      fd = open(self._cfg['cookie_filepath'], 'w')
+      fd = open(self.cookiepath, 'w')
       data = {"expiration": expiration_time, "cookie": self._cookie}
       fd.write(json.dumps(data))
       fd.close()
@@ -137,34 +188,34 @@ class DingDingHelper:
       print("Error: {err}".format(err = e.args))
       sys.exit(1)
 
-  def upload_file(self, file_path):
-    """上传文件
-    参考钉钉API: https://g.alicdn.com/dingding/opendoc/docs/_server/tab10-50.html#%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6
+  def upload_file(self, file_path, space_id, space_path):
+    """
+    API: https://g.alicdn.com/dingding/opendoc/docs/_server/tab10-50.html#%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6
     """
     print("file_path = ", file_path)
-    # 获取access_token
+    # get access_token
     access_token = self.get_access_token()
     print("access_token = ", access_token)
 
-    # 获取文件大小
+    # calc size
     size = os.path.getsize(file_path)
     print("size = ", size)
 
-    # 获取uploadid
+    # get uploadid
     uploadid = self._get_uploadid(access_token, size)
     print("uploadid = ", uploadid)
     if uploadid == '':
       return False
 
-    # 上传文件块
+    # upload file chunk
     chunk_size = 1024 * 1024
     mediaid = self._upload(access_token, uploadid, file_path, size, chunk_size)
     print("mediaid = ", mediaid)
     if mediaid == '':
       return False
 
-    # 新增文件到钉盘
+    # add file to space
     self._generate_cookie()
-    self._add_file_to_space(access_token, mediaid, self._cfg['space_id'], self._cfg['space_path'] + "/" + os.path.basename(file_path))
+    self._add_file_to_space(access_token, mediaid, space_id, space_path + "/" + os.path.basename(file_path))
 
     return True
