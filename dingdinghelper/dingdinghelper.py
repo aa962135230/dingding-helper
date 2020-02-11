@@ -165,7 +165,7 @@ class DingDingHelper:
       with open(self.cookiepath, 'r') as fd:
         tmp = fd.read()
     except Exception:
-      self._renew_cookie()
+      self.renew_cookie()
       return
 
     data = json.loads(tmp)
@@ -174,14 +174,15 @@ class DingDingHelper:
     now = math.ceil(time.time())
     old = int(data["expiration"])
     if now - old > int(3600 * 24 * 6.5):
-      self._renew_cookie()
+      self.renew_cookie()
 
-  def _renew_cookie(self):
+  def renew_cookie(self):
     self._cookie = get_cookie()
     expiration_time = math.ceil(time.time())
     try:
       fd = open(self.cookiepath, 'w')
       data = {"expiration": expiration_time, "cookie": self._cookie}
+      print(json.dumps(data))
       fd.write(json.dumps(data))
       fd.close()
     except Exception as e:
