@@ -18,6 +18,7 @@ if __name__ == "__main__":
   ding.corpsecret = '...'
   ding.msgurl = 'https://oapi.dingtalk.com/robot/send?access_token=...'
   ding.send_msg('DingDingHelper Test')
+  ding.cookie = '...'
   ding.upload_file("E:/xxx.zip", 483476421, '/xxx/')
 ```
 
