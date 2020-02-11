@@ -27,6 +27,14 @@ class DingDingHelper:
     self._cookiepath = str(Path.home()) + os.sep + ".dingding_cookie"
 
   @property
+  def cookie(self):
+    return self._cookie
+
+  @cookie.setter
+  def cookie(self, value):
+    self._cookie = value
+
+  @property
   def username(self):
     return self._username
   
@@ -169,7 +177,7 @@ class DingDingHelper:
       return
 
     data = json.loads(tmp)
-    self._cookie = data["cookie"]
+    # self._cookie = data["cookie"]
     # check if cookie valid
     now = math.ceil(time.time())
     old = int(data["expiration"])
@@ -216,7 +224,6 @@ class DingDingHelper:
       return False
 
     # add file to space
-    self.generate_cookie()
     self._add_file_to_space(access_token, mediaid, space_id, space_path + "/" + os.path.basename(file_path))
 
     return True

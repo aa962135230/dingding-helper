@@ -15,4 +15,5 @@ if __name__ == "__main__":
   ding.msgurl = 'https://oapi.dingtalk.com/robot/send?access_token=xxx'
   # ding.send_msg('DingDingHelper Test')
   # ding.upload_file("E:/xxx.zip", 483476421, '/topjs/topjs3/windows/')
-  ding.renew_cookie()
+  
+  
