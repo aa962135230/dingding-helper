@@ -159,7 +159,7 @@ class DingDingHelper:
     else:
       print("Add file to space failed.")
 
-  def _generate_cookie(self):
+  def generate_cookie(self):
     tmp = None
     try:
       with open(self.cookiepath, 'r') as fd:
@@ -215,7 +215,7 @@ class DingDingHelper:
       return False
 
     # add file to space
-    self._generate_cookie()
+    self.generate_cookie()
     self._add_file_to_space(access_token, mediaid, space_id, space_path + "/" + os.path.basename(file_path))
 
     return True
