@@ -7,7 +7,7 @@ with open("README.md", mode='r') as fh:
 
 setuptools.setup(
   name="dingdinghelper",
-  version="0.0.4",
+  version="0.0.5",
   author="l2m2",
   author_email="l2m2lq@gmail.com",
   description="DingDing Helper.",
