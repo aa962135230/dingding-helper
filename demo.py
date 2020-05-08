@@ -21,6 +21,6 @@ if __name__ == "__main__":
   r_data = json.loads(r.content)
   ding.cookie = r_data["data"].rstrip()
   print(ding.cookie)
-  ding.upload_file("D:/1.txt", 483476421, '/topjs/topjs3/windows/')
+  ding.upload_file("D:/SocketTest3.zip", 483476421, '/topjs/topjs3/windows/')
   # ding.renew_cookie()
   # print(ding.cookie)

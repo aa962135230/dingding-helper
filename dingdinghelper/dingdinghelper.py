@@ -129,19 +129,15 @@ class DingDingHelper:
 
   def _upload(self, token, file_path, file_size, chunk_size, uploadid): 
     temp_url = ''
-    print(f"file_size : {file_size}, chunk_size: {chunk_size}")
     chunk_cnt = int(math.ceil(file_size * 1.0 / chunk_size))
-
-    url = "https://im.dingtalk.com/attachment/mupload?uploadid=" + \
-        uploadid + "&access_token=" + token
-
+    url = f"https://im.dingtalk.com/attachment/mupload?uploadid={uploadid}&access_token={token}"
     for i in range(0, chunk_cnt):
       offset = i * chunk_size
       lens = min(chunk_size, file_size - offset)
       chunk = FileChunkIO(file_path, 'r', offset=offset, bytes=lens)
-      ndpartition = "bytes=" + str(chunk_size * i) + "-" + str(chunk_size * (i + 1) - 1)
+      ndpartition = f"bytes={chunk_size * i}-{chunk_size * (i + 1) - 1}"
       if i == chunk_cnt - 1:
-        ndpartition = "bytes=" + str(chunk_size * i) + "-" + str(file_size - 1)
+        ndpartition = f"bytes={chunk_size * i}-{file_size - 1}"
       headers = {
         "Accept-Encoding": "gzip, deflate, br",
         "NDPartition": ndpartition,
@@ -153,13 +149,12 @@ class DingDingHelper:
       files = {
         'file': ('blob', chunk, "application/octet-stream")
       }
-      req = requests.post(url, files=files, headers=headers)
-      jsonstr = json.dumps(req.json())
-      if json.loads(jsonstr).get("msg") == "success":
-        print("uploading  " + str(i+1)+"/" + str(chunk_cnt) + "     size: " + str(math.ceil(lens * 1.0 / 1024)) + " KB")
+      response = requests.post(url, files=files, headers=headers)
+      json_response = response.json()
+      if json_response['msg'] == "success":
+        print(f"uploading {i+1}/{chunk_cnt} size: {math.ceil(lens * 1.0 / 1024)}KB")
         if i == chunk_cnt - 1:
-          temp_url = json.loads(jsonstr).get("filepath", "")
-
+          temp_url = json_response['filepath']
     return temp_url
 
   def _add_file_to_space(self, access_token, mediaid, space_id, space_path):
